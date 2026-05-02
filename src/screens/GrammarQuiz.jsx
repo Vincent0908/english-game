@@ -1,573 +1,179 @@
 import { useState, useEffect } from 'react'
+import { GameHeader } from './VocabularyMatch'
 
-// =============================================
-// DATA SOAL
-// =============================================
 const ALL_QUESTIONS = [
-  {
-    question:     'She ___ to school every day.',
-    options:      ['go', 'goes', 'going', 'gone'],
-    correct:      'goes',
-    explanation:  'Subject "She" (third person singular) → Simple Present pakai "goes" bukan "go".',
-    category:     'Subject-Verb Agreement',
-  },
-  {
-    question:     'They ___ watching TV when I called.',
-    options:      ['was', 'were', 'are', 'is'],
-    correct:      'were',
-    explanation:  '"They" adalah plural → Past Continuous menggunakan "were", bukan "was".',
-    category:     'Past Continuous',
-  },
-  {
-    question:     'I have lived here ___ 2018.',
-    options:      ['since', 'for', 'from', 'at'],
-    correct:      'since',
-    explanation:  '"Since" digunakan untuk titik waktu tertentu (tahun, tanggal). "For" digunakan untuk durasi (3 years).',
-    category:     'Preposition of Time',
-  },
-  {
-    question:     'She is ___ honest student.',
-    options:      ['a', 'an', 'the', '-'],
-    correct:      'an',
-    explanation:  '"An" digunakan sebelum kata yang bunyinya diawali vokal. "Honest" bunyinya /ɒnɪst/ → vokal "o".',
-    category:     'Article',
-  },
-  {
-    question:     'If it rains, we ___ stay at home.',
-    options:      ['will', 'would', 'shall', 'should'],
-    correct:      'will',
-    explanation:  'Conditional Type 1 (fakta nyata): If + Simple Present → will + base verb.',
-    category:     'Conditional',
-  },
-  {
-    question:     'He ___ finish the task yet.',
-    options:      ["hasn't", "didn't", "isn't", "wasn't"],
-    correct:      "hasn't",
-    explanation:  '"Yet" menunjukkan sesuatu yang belum selesai → Present Perfect: hasn\'t + past participle.',
-    category:     'Present Perfect',
-  },
-  {
-    question:     'The book was written ___ J.K. Rowling.',
-    options:      ['by', 'from', 'with', 'of'],
-    correct:      'by',
-    explanation:  'Passive voice menggunakan "by" untuk menyebut pelaku: was written by [agent].',
-    category:     'Passive Voice',
-  },
-  {
-    question:     'She speaks English ___ than her brother.',
-    options:      ['more fluently', 'most fluently', 'fluenter', 'fluently'],
-    correct:      'more fluently',
-    explanation:  'Comparative adverb: "more + adverb" untuk kata sifat yang panjang. Bukan "-er".',
-    category:     'Comparative',
-  },
-  {
-    question:     'Neither the students nor the teacher ___ ready.',
-    options:      ['was', 'were', 'are', 'is'],
-    correct:      'was',
-    explanation:  'Neither...nor → verb mengikuti subject terdekat. "The teacher" (singular) → "was".',
-    category:     'Subject-Verb Agreement',
-  },
-  {
-    question:     'You ___ smoke here. It\'s prohibited.',
-    options:      ["mustn't", "don't have to", "shouldn't", "needn't"],
-    correct:      "mustn't",
-    explanation:  '"Mustn\'t" = dilarang keras. "Don\'t have to" = tidak wajib (boleh tidak dilakukan).',
-    category:     'Modal Verb',
-  },
-  {
-    question:     'I wish I ___ fly like a bird.',
-    options:      ['could', 'can', 'will', 'would'],
-    correct:      'could',
-    explanation:  '"Wish" untuk situasi tidak nyata → past modal "could" (bukan "can" bentuk present).',
-    category:     'Subjunctive',
-  },
-  {
-    question:     '___ you mind closing the window?',
-    options:      ['Would', 'Will', 'Do', 'Should'],
-    correct:      'Would',
-    explanation:  '"Would you mind + Verb-ing?" adalah ekspresi sopan meminta tolong yang paling umum.',
-    category:     'Polite Request',
-  },
-  {
-    question:     'She suggested ___ to the cinema.',
-    options:      ['going', 'to go', 'go', 'went'],
-    correct:      'going',
-    explanation:  '"Suggest" selalu diikuti Verb-ing (gerund), bukan infinitive (to go).',
-    category:     'Gerund vs Infinitive',
-  },
-  {
-    question:     'By next year, she ___ her degree.',
-    options:      ['will have completed', 'will complete', 'has completed', 'completes'],
-    correct:      'will have completed',
-    explanation:  'Future Perfect: will have + past participle → aksi selesai sebelum waktu di masa depan.',
-    category:     'Future Perfect',
-  },
-  {
-    question:     'The news ___ surprising to everyone.',
-    options:      ['was', 'were', 'are', 'have been'],
-    correct:      'was',
-    explanation:  '"News" meskipun terdengar plural, adalah uncountable noun → verb singular "was".',
-    category:     'Uncountable Noun',
-  },
+  { question: 'She ___ to school every day.',                       options: ['go','goes','going','gone'],                              correct: 'goes',               explanation: 'Subject "She" (third person singular) → Simple Present pakai "goes" bukan "go".',           category: 'Subject-Verb Agreement' },
+  { question: 'They ___ watching TV when I called.',                options: ['was','were','are','is'],                                 correct: 'were',               explanation: '"They" adalah plural → Past Continuous menggunakan "were", bukan "was".',                  category: 'Past Continuous' },
+  { question: 'I have lived here ___ 2018.',                        options: ['since','for','from','at'],                              correct: 'since',              explanation: '"Since" untuk titik waktu tertentu. "For" untuk durasi.',                                   category: 'Preposition of Time' },
+  { question: 'She is ___ honest student.',                         options: ['a','an','the','-'],                                     correct: 'an',                 explanation: '"An" sebelum bunyi vokal. "Honest" diucapkan /ɒnɪst/ → vokal "o".',                        category: 'Article' },
+  { question: 'If it rains, we ___ stay at home.',                  options: ['will','would','shall','should'],                        correct: 'will',               explanation: 'Conditional Type 1: If + Simple Present → will + base verb.',                              category: 'Conditional' },
+  { question: 'He ___ finish the task yet.',                        options: ["hasn't","didn't","isn't","wasn't"],                     correct: "hasn't",             explanation: '"Yet" → Present Perfect: hasn\'t + past participle.',                                      category: 'Present Perfect' },
+  { question: 'The book was written ___ J.K. Rowling.',             options: ['by','from','with','of'],                               correct: 'by',                 explanation: 'Passive voice menggunakan "by" untuk menyebut pelaku.',                                     category: 'Passive Voice' },
+  { question: 'She speaks English ___ than her brother.',           options: ['more fluently','most fluently','fluenter','fluently'], correct: 'more fluently',      explanation: 'Comparative adverb: "more + adverb" untuk adverb panjang.',                                 category: 'Comparative' },
+  { question: 'Neither the students nor the teacher ___ ready.',    options: ['was','were','are','is'],                               correct: 'was',                explanation: 'Neither...nor → verb ikuti subject terdekat. "The teacher" (singular) → "was".',           category: 'Subject-Verb Agreement' },
+  { question: "You ___ smoke here. It's prohibited.",               options: ["mustn't","don't have to","shouldn't","needn't"],       correct: "mustn't",            explanation: '"Mustn\'t" = dilarang keras. "Don\'t have to" = tidak wajib.',                             category: 'Modal Verb' },
+  { question: 'I wish I ___ fly like a bird.',                      options: ['could','can','will','would'],                          correct: 'could',              explanation: '"Wish" untuk situasi tidak nyata → past modal "could".',                                   category: 'Subjunctive' },
+  { question: '___ you mind closing the window?',                   options: ['Would','Will','Do','Should'],                          correct: 'Would',              explanation: '"Would you mind + Verb-ing?" adalah ekspresi sopan yang paling umum.',                    category: 'Polite Request' },
+  { question: 'She suggested ___ to the cinema.',                   options: ['going','to go','go','went'],                           correct: 'going',              explanation: '"Suggest" selalu diikuti Verb-ing (gerund).',                                               category: 'Gerund vs Infinitive' },
+  { question: 'By next year, she ___ her degree.',                  options: ['will have completed','will complete','has completed','completes'], correct: 'will have completed', explanation: 'Future Perfect: will have + past participle.',      category: 'Future Perfect' },
+  { question: 'The news ___ surprising to everyone.',               options: ['was','were','are','have been'],                        correct: 'was',                explanation: '"News" adalah uncountable noun → verb singular "was".',                                    category: 'Uncountable Noun' },
 ]
 
 const TOTAL_QUESTIONS = 10
 const TIME_PER_QUESTION = 20
 
-function shuffle(arr) {
-  return [...arr].sort(() => Math.random() - 0.5)
-}
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5) }
 
-// =============================================
-// KOMPONEN UTAMA
-// =============================================
 function GrammarQuiz({ navigate, completeGame }) {
-  const [questions]     = useState(() => shuffle(ALL_QUESTIONS).slice(0, TOTAL_QUESTIONS))
-  const [index,          setIndex]      = useState(0)
-  const [selected,       setSelected]   = useState(null)
-  const [isAnswered,     setIsAnswered]  = useState(false)
-  const [timer,          setTimer]       = useState(TIME_PER_QUESTION)
-  const [phase,          setPhase]       = useState('playing')
-  const [score,          setScore]       = useState(0)
-  const [results,        setResults]     = useState([])
-  const [streak,         setStreak]      = useState(0)
-  const [showStreak,     setShowStreak]  = useState(false)
+  const [questions]  = useState(() => shuffle(ALL_QUESTIONS).slice(0, TOTAL_QUESTIONS))
+  const [index,       setIndex]     = useState(0)
+  const [selected,    setSelected]  = useState(null)
+  const [isAnswered,  setIsAnswered] = useState(false)
+  const [timer,       setTimer]     = useState(TIME_PER_QUESTION)
+  const [phase,       setPhase]     = useState('playing')
+  const [score,       setScore]     = useState(0)
+  const [results,     setResults]   = useState([])
+  const [streak,      setStreak]    = useState(0)
+  const [showStreak,  setShowStreak] = useState(false)
 
   const currentQ = questions[index]
 
-  // Reset tiap soal baru
-  useEffect(() => {
-    setSelected(null)
-    setIsAnswered(false)
-    setTimer(TIME_PER_QUESTION)
-  }, [index])
+  useEffect(() => { setSelected(null); setIsAnswered(false); setTimer(TIME_PER_QUESTION) }, [index])
 
-  // Timer
   useEffect(() => {
     if (phase !== 'playing' || isAnswered) return
-    if (timer === 0) {
-      handleAnswer(null)
-      return
-    }
-    const interval = setInterval(() => setTimer(t => t - 1), 1000)
-    return () => clearInterval(interval)
+    if (timer === 0) { handleAnswer(null); return }
+    const id = setInterval(() => setTimer(t => t - 1), 1000)
+    return () => clearInterval(id)
   }, [timer, isAnswered, phase])
 
   const handleAnswer = (option) => {
     if (isAnswered) return
-
-    const isCorrect = option === currentQ.correct
-    setSelected(option)
-    setIsAnswered(true)
-
-    let pointsEarned = 0
-    let newStreak = streak
-
-    if (isCorrect) {
-      newStreak = streak + 1
-      // Bonus poin untuk streak
-      pointsEarned = newStreak >= 3 ? 15 : 10
-      setScore(s => s + pointsEarned)
-      setStreak(newStreak)
-      if (newStreak >= 3) {
-        setShowStreak(true)
-        setTimeout(() => setShowStreak(false), 1500)
-      }
-    } else {
-      newStreak = 0
-      setStreak(0)
-    }
-
-    setResults(prev => [...prev, {
-      question:    currentQ.question,
-      correct:     currentQ.correct,
-      chosen:      option,
-      explanation: currentQ.explanation,
-      category:    currentQ.category,
-      isCorrect,
-      points:      pointsEarned,
-    }])
-
-    setTimeout(() => {
-      if (index + 1 >= TOTAL_QUESTIONS) setPhase('result')
-      else setIndex(i => i + 1)
-    }, 2000)
+    const ok = option === currentQ.correct
+    setSelected(option); setIsAnswered(true)
+    let pts = 0, newStreak = streak
+    if (ok) {
+      newStreak = streak + 1; pts = newStreak >= 3 ? 15 : 10
+      setScore(s => s + pts); setStreak(newStreak)
+      if (newStreak >= 3) { setShowStreak(true); setTimeout(() => setShowStreak(false), 1500) }
+    } else { setStreak(0) }
+    setResults(p => [...p, { question: currentQ.question, correct: currentQ.correct, chosen: option, explanation: currentQ.explanation, category: currentQ.category, isCorrect: ok, points: pts }])
+    setTimeout(() => { if (index + 1 >= TOTAL_QUESTIONS) setPhase('result'); else setIndex(i => i + 1) }, 2000)
   }
 
   if (phase === 'result') {
+    const maxScore = TOTAL_QUESTIONS * 15
+    const xp = Math.round((score / maxScore) * 200)
+    const correct = results.filter(r => r.isCorrect).length
+    const wrongCats = [...new Set(results.filter(r => !r.isCorrect).map(r => r.category))]
+    const [showDetail, setShowDetail] = useState(false)
+    const pct = Math.round((score / maxScore) * 100)
+    const emoji = pct === 100 ? '🏆' : pct >= 70 ? '⭐' : pct >= 40 ? '👍' : '💪'
+
     return (
-      <QuizResult
-        score={score}
-        total={TOTAL_QUESTIONS}
-        results={results}
-        onFinish={() => {
-          const maxScore = TOTAL_QUESTIONS * 15
-          const xpEarned = Math.round((score / maxScore) * 200)
-          completeGame('grammar', score, xpEarned)
-        }}
-      />
+      <div className="min-h-screen bg-grammar px-6 py-6 max-w-2xl mx-auto flex items-center">
+        <div className="w-full bg-panel border border-dim rounded-3xl px-8 py-10 flex flex-col items-center gap-4 text-center">
+          <p className="text-6xl">{emoji}</p>
+          <h2 className="font-quest text-gold text-2xl">Quest Complete!</h2>
+          <div className="grid grid-cols-3 gap-3 w-full">
+            {[['Score', score, 'text-gold'], [`${correct}/${TOTAL_QUESTIONS}`, 'Correct', 'text-emerald-400'], [`+${xp}`, 'XP', 'text-purple-400']].map(([val, label, color], i) => (
+              <div key={i} className="bg-navy rounded-xl p-4 border border-dim">
+                <p className={`font-extrabold text-xl ${color}`}>{val}</p>
+                <p className="text-slate-400 text-xs mt-1">{label}</p>
+              </div>
+            ))}
+          </div>
+          {wrongCats.length > 0 && (
+            <div className="w-full bg-danger/5 border border-danger/20 rounded-xl p-4">
+              <p className="text-danger font-bold text-sm mb-2">📚 Areas to Improve:</p>
+              <div className="flex gap-2 flex-wrap justify-center">
+                {wrongCats.map((c, i) => <span key={i} className="bg-danger/10 text-danger rounded-full px-2.5 py-0.5 text-xs font-bold">{c}</span>)}
+              </div>
+            </div>
+          )}
+          <button className="bg-transparent border border-dim text-slate-400 rounded-lg px-5 py-2 text-sm hover:text-slate-200 transition-colors" onClick={() => setShowDetail(d => !d)}>
+            {showDetail ? '🙈 Hide Review' : '📋 Review Answers'}
+          </button>
+          {showDetail && (
+            <div className="w-full flex flex-col gap-2 max-h-72 overflow-y-auto">
+              {results.map((r, i) => (
+                <div key={i} className={`bg-navy rounded-xl px-4 py-3 border text-left flex flex-col gap-1.5 ${r.isCorrect ? 'border-emerald-500/30' : 'border-danger/30'}`}>
+                  <p className="text-sm text-slate-200 font-bold">{r.question}</p>
+                  <p className={`text-xs font-bold ${r.isCorrect ? 'text-emerald-400' : 'text-danger'}`}>{r.isCorrect ? `✓ ${r.correct}` : `✗ You: ${r.chosen ?? 'No answer'} → ${r.correct}`}</p>
+                  <p className="text-xs text-slate-400 italic">💡 {r.explanation}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          <button className="bg-gradient-to-br from-gold to-[#ff8c00] rounded-xl px-8 py-3.5 text-dark font-extrabold text-base mt-2 hover:-translate-y-0.5 transition-all" onClick={() => completeGame('grammar', score, xp)}>
+            Back to Quest Map
+          </button>
+        </div>
+      </div>
     )
   }
 
-  const progress   = (index / TOTAL_QUESTIONS) * 100
-  const timerColor = timer <= 5 ? '#ff6b6b' : timer <= 10 ? '#f59e0b' : '#00e5a0'
-  const timerPct   = (timer / TIME_PER_QUESTION) * 100
+  const timerPct  = (timer / TIME_PER_QUESTION) * 100
+  const timerBg   = timer <= 5 ? 'bg-danger' : timer <= 10 ? 'bg-amber-400' : 'bg-teal'
+  const timerText = timer <= 5 ? 'text-danger' : timer <= 10 ? 'text-amber-400' : 'text-teal'
 
-  const getOptionStyle = (option) => {
-    if (!isAnswered) return styles.optionDefault
-    if (option === currentQ.correct) return styles.optionCorrect
-    if (option === selected && option !== currentQ.correct) return styles.optionWrong
-    return styles.optionDim
+  const getOptionClass = (option) => {
+    const base = 'flex items-center gap-2.5 px-4 py-3.5 rounded-xl border text-left text-sm font-bold transition-all w-full'
+    if (!isAnswered) return `${base} bg-panel border-dim text-slate-200 hover:translate-x-1 hover:border-blue-400 cursor-pointer`
+    if (option === currentQ.correct) return `${base} bg-emerald-500/10 border-emerald-500 text-emerald-400`
+    if (option === selected)         return `${base} bg-danger/10 border-danger text-danger`
+    return `${base} bg-panel border-navy text-slate-600`
   }
 
   return (
-    <div style={styles.container}>
-      {/* Streak Banner */}
+    <div className="min-h-screen bg-grammar px-6 py-6 max-w-2xl mx-auto flex flex-col gap-4">
       {showStreak && (
-        <div style={styles.streakBanner}>
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-red-500 text-white font-extrabold text-base px-7 py-3 rounded-full z-50 shadow-[0_4px_20px_#f59e0b44] animate-scaleIn">
           🔥 {streak} Streak! Bonus +5 pts!
         </div>
       )}
 
-      {/* Header */}
-      <div style={styles.header}>
-        <button style={styles.backBtn} onClick={() => navigate('select')}>← Back</button>
-        <div style={styles.headerCenter}>
-          <p style={styles.headerTitle}>📖 Grammar Quiz</p>
-          <div style={styles.progressBar}>
-            <div style={{ ...styles.progressFill, width: `${progress}%` }} />
-          </div>
-          <p style={styles.progressText}>{index + 1} / {TOTAL_QUESTIONS}</p>
+      <GameHeader title="📖 Grammar Quiz" index={index} total={TOTAL_QUESTIONS} score={score} progress={index / TOTAL_QUESTIONS * 100} barColor="from-red-500 to-purple-500" navigate={navigate} />
+
+      <div className="flex items-center gap-3">
+        <div className="flex-1 bg-navy rounded-full h-2.5 overflow-hidden">
+          <div className={`h-full rounded-full transition-all duration-1000 ${timerBg}`} style={{ width: `${timerPct}%` }} />
         </div>
-        <div style={styles.scoreDisplay}>
-          <p style={styles.scoreLbl}>Score</p>
-          <p style={styles.scoreVal}>{score}</p>
-        </div>
+        <span className={`font-extrabold text-sm min-w-[32px] ${timerText}`}>{timer}s</span>
       </div>
 
-      {/* Timer Bar */}
-      <div style={styles.timerBarWrap}>
-        <div style={styles.timerBarBg}>
-          <div style={{
-            ...styles.timerBarFill,
-            width: `${timerPct}%`,
-            background: timerColor,
-            transition: 'width 1s linear, background 0.3s',
-          }} />
-        </div>
-        <span style={{ color: timerColor, fontWeight: 800, fontSize: '14px', minWidth: '24px' }}>
-          {timer}s
-        </span>
+      <div className="flex justify-between items-center">
+        <span className="bg-navy border border-dim text-slate-400 rounded-full px-3 py-1 text-xs font-bold">📂 {currentQ.category}</span>
+        {streak >= 2 && <span className="bg-amber-400/10 border border-amber-400/30 text-amber-400 rounded-full px-3 py-1 text-xs font-extrabold">🔥 {streak} Streak!</span>}
       </div>
 
-      {/* Streak & Category Info */}
-      <div style={styles.metaRow}>
-        <span style={styles.categoryBadge}>📂 {currentQ.category}</span>
-        {streak >= 2 && (
-          <span style={styles.streakBadge}>🔥 {streak} Streak!</span>
-        )}
+      <div className="bg-panel border border-dim rounded-2xl px-6 py-7 text-center">
+        <p className="text-slate-400 text-xs mb-3">Question {index + 1}</p>
+        <p className="text-slate-200 text-lg font-extrabold leading-relaxed">{currentQ.question}</p>
       </div>
 
-      {/* Kartu Soal */}
-      <div style={styles.questionCard}>
-        <p style={styles.questionNumber}>Question {index + 1}</p>
-        <p style={styles.questionText}>{currentQ.question}</p>
-      </div>
-
-      {/* Pilihan Jawaban */}
-      <div style={styles.optionsGrid}>
+      <div className="grid grid-cols-2 gap-2.5">
         {currentQ.options.map((option, i) => (
-          <button
-            key={i}
-            style={{ ...styles.optionBase, ...getOptionStyle(option) }}
-            onClick={() => handleAnswer(option)}
-            disabled={isAnswered}
-          >
-            <span style={styles.optionLabel}>
-              {['A', 'B', 'C', 'D'][i]}
-            </span>
-            <span style={styles.optionText}>{option}</span>
-            {isAnswered && option === currentQ.correct && (
-              <span style={{ marginLeft: 'auto', color: '#10b981' }}>✓</span>
-            )}
-            {isAnswered && option === selected && option !== currentQ.correct && (
-              <span style={{ marginLeft: 'auto', color: '#ff6b6b' }}>✗</span>
-            )}
+          <button key={i} className={getOptionClass(option)} onClick={() => handleAnswer(option)} disabled={isAnswered}>
+            <span className="bg-navy rounded-md w-7 h-7 flex items-center justify-center text-xs font-extrabold text-slate-400 flex-shrink-0">{['A','B','C','D'][i]}</span>
+            <span className="flex-1">{option}</span>
+            {isAnswered && option === currentQ.correct && <span className="ml-auto text-emerald-400">✓</span>}
+            {isAnswered && option === selected && option !== currentQ.correct && <span className="ml-auto text-danger">✗</span>}
           </button>
         ))}
       </div>
 
-      {/* Explanation Box */}
       {isAnswered && (
-        <div style={{
-          ...styles.explanationBox,
-          borderColor: selected === currentQ.correct ? '#10b98155' : '#ff6b6b55',
-          background:  selected === currentQ.correct ? '#10b98108' : '#ff6b6b08',
-        }}>
-          <p style={styles.explanationTitle}>
-            {selected === currentQ.correct ? '✅ Correct!' : selected === null ? '⏱ Time\'s up!' : '❌ Wrong!'}
+        <div className={`border rounded-2xl px-5 py-4 flex flex-col gap-2 ${selected === currentQ.correct ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-danger/30 bg-danger/5'}`}>
+          <p className="text-slate-200 font-extrabold text-sm">
+            {selected === currentQ.correct ? '✅ Correct!' : selected === null ? "⏱ Time's up!" : '❌ Wrong!'}
             {selected === currentQ.correct && streak >= 3 && ' +5 Bonus!'}
           </p>
-          <p style={styles.explanationText}>💡 {currentQ.explanation}</p>
+          <p className="text-slate-400 text-xs leading-relaxed">💡 {currentQ.explanation}</p>
         </div>
       )}
     </div>
   )
-}
-
-// =============================================
-// RESULT SCREEN
-// =============================================
-function QuizResult({ score, total, results, onFinish }) {
-  const [showDetail, setShowDetail] = useState(false)
-  const maxScore   = total * 15
-  const percentage = Math.round((score / maxScore) * 100)
-  const xpEarned   = Math.round((score / maxScore) * 200)
-  const correct    = results.filter(r => r.isCorrect).length
-
-  const emoji = percentage === 100 ? '🏆' : percentage >= 70 ? '⭐' : percentage >= 40 ? '👍' : '💪'
-
-  // Hitung kategori yang salah terbanyak
-  const wrongCategories = results
-    .filter(r => !r.isCorrect)
-    .map(r => r.category)
-  const uniqueWrong = [...new Set(wrongCategories)]
-
-  return (
-    <div style={styles.container}>
-      <div style={styles.resultBox}>
-        <p style={{ fontSize: '64px' }}>{emoji}</p>
-        <h2 style={styles.resultTitle}>Quest Complete!</h2>
-
-        {/* Stats Row */}
-        <div style={styles.statsRow}>
-          <StatBox label="Score" value={score} color="#ffd700" />
-          <StatBox label="Correct" value={`${correct}/${total}`} color="#10b981" />
-          <StatBox label="XP" value={`+${xpEarned}`} color="#a855f7" />
-        </div>
-
-        {/* Area yang perlu diperbaiki */}
-        {uniqueWrong.length > 0 && (
-          <div style={styles.improveBox}>
-            <p style={styles.improveTitle}>📚 Areas to Improve:</p>
-            <div style={styles.improveList}>
-              {uniqueWrong.map((cat, i) => (
-                <span key={i} style={styles.improveBadge}>{cat}</span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Toggle Detail */}
-        <button style={styles.detailToggle} onClick={() => setShowDetail(d => !d)}>
-          {showDetail ? '🙈 Hide Review' : '📋 Review Answers'}
-        </button>
-
-        {showDetail && (
-          <div style={styles.recapList}>
-            {results.map((r, i) => (
-              <div key={i} style={{ ...styles.recapRow, borderColor: r.isCorrect ? '#10b98144' : '#ff6b6b44' }}>
-                <div style={{ flex: 1, textAlign: 'left' }}>
-                  <p style={{ fontSize: '13px', color: '#e2e8f0', fontWeight: 700, marginBottom: '4px' }}>
-                    {r.question}
-                  </p>
-                  <p style={{ fontSize: '12px', color: r.isCorrect ? '#10b981' : '#ff6b6b' }}>
-                    {r.isCorrect ? `✓ ${r.correct}` : `✗ You: ${r.chosen ?? 'No answer'} → ${r.correct}`}
-                  </p>
-                  <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px', fontStyle: 'italic' }}>
-                    💡 {r.explanation}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <button style={styles.btnFinish} onClick={onFinish}>
-          Back to Quest Map
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function StatBox({ label, value, color }) {
-  return (
-    <div style={styles.statBox}>
-      <p style={{ ...styles.statValue, color }}>{value}</p>
-      <p style={styles.statLabel}>{label}</p>
-    </div>
-  )
-}
-
-// =============================================
-// STYLES
-// =============================================
-const styles = {
-  container: {
-    minHeight: '100vh',
-    background: 'radial-gradient(ellipse at top, #1a0f2e 0%, #0a0e1a 60%)',
-    padding: '24px', maxWidth: '620px', margin: '0 auto',
-    display: 'flex', flexDirection: 'column', gap: '16px',
-  },
-  streakBanner: {
-    position: 'fixed', top: '20px', left: '50%',
-    transform: 'translateX(-50%)',
-    background: 'linear-gradient(135deg, #f59e0b, #ef4444)',
-    color: '#fff', fontWeight: 800, fontSize: '16px',
-    padding: '12px 28px', borderRadius: '999px',
-    zIndex: 999, boxShadow: '0 4px 20px #f59e0b44',
-    animation: 'none',
-  },
-  header: {
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px',
-    background: '#111827', borderRadius: '16px',
-    padding: '16px 20px', border: '1px solid #2d3748',
-  },
-  backBtn: {
-    background: 'none', border: '1px solid #2d3748',
-    color: '#94a3b8', borderRadius: '8px',
-    padding: '8px 12px', fontSize: '13px', cursor: 'pointer',
-  },
-  headerCenter: { flex: 1, textAlign: 'center' },
-  headerTitle: { color: '#e2e8f0', fontWeight: 800, marginBottom: '8px' },
-  progressBar: {
-    background: '#1a2235', borderRadius: '999px', height: '6px', overflow: 'hidden',
-  },
-  progressFill: {
-    background: 'linear-gradient(90deg, #ef4444, #a855f7)',
-    height: '100%', borderRadius: '999px', transition: 'width 0.4s ease',
-  },
-  progressText: { color: '#94a3b8', fontSize: '12px', marginTop: '4px' },
-  scoreDisplay: { textAlign: 'right' },
-  scoreLbl: { color: '#94a3b8', fontSize: '12px' },
-  scoreVal: { color: '#ffd700', fontWeight: 800, fontSize: '22px' },
-
-  timerBarWrap: {
-    display: 'flex', alignItems: 'center', gap: '10px',
-  },
-  timerBarBg: {
-    flex: 1, background: '#1a2235', borderRadius: '999px',
-    height: '10px', overflow: 'hidden',
-  },
-  timerBarFill: {
-    height: '100%', borderRadius: '999px',
-  },
-
-  metaRow: {
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-  },
-  categoryBadge: {
-    background: '#1a2235', border: '1px solid #2d3748',
-    color: '#94a3b8', borderRadius: '999px',
-    padding: '4px 12px', fontSize: '12px', fontWeight: 700,
-  },
-  streakBadge: {
-    background: '#f59e0b22', border: '1px solid #f59e0b44',
-    color: '#f59e0b', borderRadius: '999px',
-    padding: '4px 12px', fontSize: '12px', fontWeight: 800,
-  },
-
-  questionCard: {
-    background: '#111827', border: '1px solid #2d3748',
-    borderRadius: '20px', padding: '28px 24px',
-    textAlign: 'center',
-  },
-  questionNumber: { color: '#94a3b8', fontSize: '13px', marginBottom: '12px' },
-  questionText: {
-    color: '#e2e8f0', fontSize: '20px', fontWeight: 800,
-    lineHeight: 1.5,
-  },
-
-  optionsGrid: {
-    display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px',
-  },
-  optionBase: {
-    display: 'flex', alignItems: 'center', gap: '10px',
-    padding: '14px 16px', borderRadius: '12px',
-    border: '1px solid', textAlign: 'left',
-    transition: 'all 0.2s', cursor: 'pointer',
-    fontSize: '14px', fontWeight: 700,
-    fontFamily: "'Nunito', sans-serif",
-  },
-  optionDefault: {
-    background: '#111827', borderColor: '#2d3748', color: '#e2e8f0',
-  },
-  optionCorrect: {
-    background: '#10b98122', borderColor: '#10b981', color: '#10b981',
-  },
-  optionWrong: {
-    background: '#ff6b6b22', borderColor: '#ff6b6b', color: '#ff6b6b',
-  },
-  optionDim: {
-    background: '#111827', borderColor: '#1a2235', color: '#334155',
-  },
-  optionLabel: {
-    background: '#1a2235', borderRadius: '6px',
-    width: '28px', height: '28px', flexShrink: 0,
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: '12px', fontWeight: 800, color: '#94a3b8',
-  },
-  optionText: { flex: 1 },
-
-  explanationBox: {
-    border: '1px solid', borderRadius: '14px',
-    padding: '16px 20px', display: 'flex',
-    flexDirection: 'column', gap: '8px',
-  },
-  explanationTitle: { color: '#e2e8f0', fontWeight: 800, fontSize: '15px' },
-  explanationText: { color: '#94a3b8', fontSize: '13px', lineHeight: 1.6 },
-
-  // Result
-  resultBox: {
-    margin: 'auto', textAlign: 'center',
-    background: '#111827', border: '1px solid #2d3748',
-    borderRadius: '24px', padding: '40px 28px',
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', width: '100%',
-  },
-  resultTitle: {
-    fontFamily: "'Cinzel Decorative', cursive", color: '#ffd700', fontSize: '24px',
-  },
-  statsRow: { display: 'flex', gap: '12px', width: '100%' },
-  statBox: {
-    flex: 1, background: '#1a2235', borderRadius: '12px',
-    padding: '16px 8px', textAlign: 'center',
-    border: '1px solid #2d3748',
-  },
-  statValue: { fontSize: '24px', fontWeight: 800 },
-  statLabel: { color: '#94a3b8', fontSize: '12px', marginTop: '4px' },
-
-  improveBox: {
-    width: '100%', background: '#ff6b6b0a',
-    border: '1px solid #ff6b6b33', borderRadius: '12px', padding: '14px',
-  },
-  improveTitle: { color: '#ff6b6b', fontWeight: 700, fontSize: '13px', marginBottom: '8px' },
-  improveList: { display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' },
-  improveBadge: {
-    background: '#ff6b6b22', color: '#ff6b6b',
-    borderRadius: '999px', padding: '3px 10px', fontSize: '11px', fontWeight: 700,
-  },
-
-  detailToggle: {
-    background: 'none', border: '1px solid #2d3748',
-    color: '#94a3b8', borderRadius: '8px', padding: '8px 20px',
-    fontSize: '13px', cursor: 'pointer', fontFamily: "'Nunito', sans-serif",
-  },
-  recapList: {
-    width: '100%', display: 'flex', flexDirection: 'column',
-    gap: '10px', maxHeight: '320px', overflowY: 'auto',
-  },
-  recapRow: {
-    display: 'flex', alignItems: 'flex-start',
-    background: '#1a2235', borderRadius: '10px', padding: '12px 14px',
-    border: '1px solid', gap: '10px', textAlign: 'left',
-  },
-  btnFinish: {
-    background: 'linear-gradient(135deg, #ffd700, #ff8c00)',
-    border: 'none', borderRadius: '12px', padding: '14px 32px',
-    color: '#0a0e1a', fontWeight: 800, fontSize: '16px',
-    marginTop: '8px', cursor: 'pointer',
-  },
 }
 
 export default GrammarQuiz

@@ -1,18 +1,17 @@
 import { useState, useMemo } from 'react'
 
-// Generate bintang sekali saja pakai useMemo
 function useStars(count) {
   return useMemo(() => Array.from({ length: count }, (_, i) => ({
     id: i,
-    left:  `${(i * 37.3 + 11) % 100}%`,
-    top:   `${(i * 53.7 + 7)  % 100}%`,
-    size:  (i % 3) + 1,
-    delay: `${(i * 0.3) % 3}s`,
+    left: `${(i * 37.3 + 11) % 100}%`,
+    top:  `${(i * 53.7 + 7)  % 100}%`,
+    size: (i % 3) + 1,
+    delay:    `${(i * 0.3) % 3}s`,
     duration: `${2 + (i % 3)}s`,
   })), [count])
 }
 
-function HomeScreen({ navigate, playerData, updatePlayer }) {
+function HomeScreen({ navigate, updatePlayer }) {
   const [nameInput, setNameInput] = useState('')
   const [error,     setError]     = useState('')
   const stars = useStars(40)
@@ -27,54 +26,53 @@ function HomeScreen({ navigate, playerData, updatePlayer }) {
   }
 
   return (
-    <div style={styles.container}>
-      {/* Bintang statis */}
-      <div style={styles.starsLayer} aria-hidden="true">
+    <div className="min-h-screen bg-quest relative overflow-hidden flex items-center justify-center">
+      {/* Bintang */}
+      <div className="absolute inset-0 pointer-events-none">
         {stars.map(s => (
-          <div key={s.id} style={{
-            position: 'absolute',
+          <div key={s.id} className="absolute rounded-full animate-twinkle" style={{
             left: s.left, top: s.top,
-            width:  `${s.size}px`,
-            height: `${s.size}px`,
-            background: '#fff',
-            borderRadius: '50%',
-            opacity: 0.5,
-            animation: `twinkle ${s.duration} ${s.delay} ease-in-out infinite alternate`,
+            width: `${s.size}px`, height: `${s.size}px`,
+            background: '#fff', opacity: 0.5,
+            animationDuration: s.duration, animationDelay: s.delay,
           }} />
         ))}
       </div>
 
-      {/* Lingkaran cahaya belakang */}
-      <div style={styles.glowOrb1} aria-hidden="true" />
-      <div style={styles.glowOrb2} aria-hidden="true" />
+      {/* Glow orbs */}
+      <div className="absolute -top-24 -left-24 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, #ffd70008 0%, transparent 70%)' }} />
+      <div className="absolute -bottom-20 -right-20 w-[400px] h-[400px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, #3b82f608 0%, transparent 70%)' }} />
 
-      <div style={styles.content}>
+      {/* Konten */}
+      <div className="relative z-10 flex flex-col items-center gap-7 px-6 w-full max-w-md">
+
         {/* Logo */}
-        <div style={{ ...styles.logoArea, animation: 'fadeInUp 0.6s ease forwards' }}>
-          <div style={{ fontSize: '72px', animation: 'float 3s ease-in-out infinite' }}>
-            📚
-          </div>
-          <h1 style={styles.title}>ENGLISH</h1>
-          <h1 style={styles.titleAccent}>QUEST</h1>
-          <p style={styles.subtitle}>⚔️ Master English. Complete the Quest. ⚔️</p>
+        <div className="text-center animate-fadeInUp">
+          <div className="text-7xl animate-float">📚</div>
+          <h1 className="font-quest text-[44px] text-gold tracking-[5px] leading-none" style={{ textShadow: '0 0 40px #ffd70060' }}>
+            ENGLISH
+          </h1>
+          <h1 className="font-quest text-[44px] text-white tracking-[5px] leading-snug" style={{ textShadow: '0 0 20px #ffffff30' }}>
+            QUEST
+          </h1>
+          <p className="mt-3 text-slate-400 text-sm tracking-wide">⚔️ Master English. Complete the Quest. ⚔️</p>
         </div>
 
         {/* Form */}
-        <div style={{ ...styles.card, animation: 'fadeInUp 0.6s 0.15s ease both' }}>
-          <p style={styles.cardLabel}>Enter Your Name, Adventurer!</p>
+        <div className="bg-panel border border-dim rounded-2xl p-7 w-full flex flex-col gap-3 animate-[fadeInUp_0.6s_0.15s_ease_both]" style={{ boxShadow: '0 0 60px #ffd70010' }}>
+          <p className="text-slate-200 font-bold text-center text-sm">Enter Your Name, Adventurer!</p>
           <input
-            style={styles.input}
+            className="bg-navy border border-dim rounded-xl px-4 py-3 text-slate-200 text-base outline-none focus:border-blue-500 transition-colors"
             type="text"
             placeholder="Your name..."
             value={nameInput}
-            onChange={(e) => { setNameInput(e.target.value); setError('') }}
-            onKeyDown={(e) => e.key === 'Enter' && handleStart()}
+            onChange={e => { setNameInput(e.target.value); setError('') }}
+            onKeyDown={e => e.key === 'Enter' && handleStart()}
             autoFocus
           />
-          {error && <p style={styles.error}>⚠️ {error}</p>}
+          {error && <p className="text-danger text-sm text-center">⚠️ {error}</p>}
           <button
-            className="btn-start"
-            style={styles.btnStart}
+            className="bg-gradient-to-br from-gold to-[#ff8c00] rounded-xl py-4 text-dark font-extrabold text-base tracking-wide hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[0_8px_24px_#ffd70040] active:scale-[0.97] transition-all"
             onClick={handleStart}
           >
             ⚔️ START QUEST
@@ -82,95 +80,21 @@ function HomeScreen({ navigate, playerData, updatePlayer }) {
         </div>
 
         {/* Badge info */}
-        <div style={{ ...styles.infoRow, animation: 'fadeInUp 0.6s 0.3s ease both' }}>
+        <div className="flex gap-2 flex-wrap justify-center animate-[fadeInUp_0.6s_0.3s_ease_both]">
           {[
             { icon: '🎮', text: '4 Mini Games' },
             { icon: '⭐', text: 'XP System' },
             { icon: '🏆', text: 'Level Up' },
             { icon: '💡', text: 'Hints & Tips' },
           ].map(({ icon, text }) => (
-            <div key={text} style={styles.badge}>
-              <span>{icon}</span>
-              <span style={{ fontSize: '12px', fontWeight: 700 }}>{text}</span>
+            <div key={text} className="bg-panel border border-dim rounded-full px-3 py-1.5 flex gap-1.5 items-center text-slate-200 text-xs font-bold">
+              <span>{icon}</span><span>{text}</span>
             </div>
           ))}
         </div>
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    minHeight: '100vh',
-    background: 'radial-gradient(ellipse at 50% 40%, #0f1e3d 0%, #0a0e1a 70%)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    position: 'relative', overflow: 'hidden',
-  },
-  starsLayer: { position: 'absolute', inset: 0, pointerEvents: 'none' },
-  glowOrb1: {
-    position: 'absolute', width: '500px', height: '500px',
-    borderRadius: '50%', top: '-100px', left: '-100px',
-    background: 'radial-gradient(circle, #ffd70008 0%, transparent 70%)',
-    pointerEvents: 'none',
-  },
-  glowOrb2: {
-    position: 'absolute', width: '400px', height: '400px',
-    borderRadius: '50%', bottom: '-80px', right: '-80px',
-    background: 'radial-gradient(circle, #3b82f608 0%, transparent 70%)',
-    pointerEvents: 'none',
-  },
-  content: {
-    display: 'flex', flexDirection: 'column',
-    alignItems: 'center', gap: '28px',
-    padding: '24px', zIndex: 1,
-    width: '100%', maxWidth: '440px',
-  },
-  logoArea: { textAlign: 'center' },
-  title: {
-    fontFamily: "'Cinzel Decorative', cursive",
-    fontSize: '44px', color: '#ffd700',
-    textShadow: '0 0 40px #ffd70060',
-    letterSpacing: '6px', lineHeight: 1,
-  },
-  titleAccent: {
-    fontFamily: "'Cinzel Decorative', cursive",
-    fontSize: '44px', color: '#ffffff',
-    textShadow: '0 0 20px #ffffff30',
-    letterSpacing: '6px', lineHeight: 1.2,
-  },
-  subtitle: { marginTop: '12px', color: '#94a3b8', fontSize: '13px', letterSpacing: '1px' },
-  card: {
-    background: '#111827',
-    border: '1px solid #2d3748',
-    borderRadius: '20px', padding: '28px',
-    width: '100%', display: 'flex', flexDirection: 'column', gap: '12px',
-    boxShadow: '0 0 60px #ffd70010',
-  },
-  cardLabel: { color: '#e2e8f0', fontWeight: 700, fontSize: '15px', textAlign: 'center' },
-  input: {
-    background: '#1a2235', border: '1px solid #2d3748',
-    borderRadius: '10px', padding: '14px 16px',
-    color: '#e2e8f0', fontSize: '16px', outline: 'none',
-    fontFamily: "'Nunito', sans-serif",
-    transition: 'border-color 0.2s, box-shadow 0.2s',
-  },
-  error: { color: '#ff6b6b', fontSize: '13px', textAlign: 'center' },
-  btnStart: {
-    background: 'linear-gradient(135deg, #ffd700, #ff8c00)',
-    border: 'none', borderRadius: '12px',
-    padding: '15px', color: '#0a0e1a',
-    fontWeight: 800, fontSize: '16px',
-    letterSpacing: '1px', transition: 'all 0.2s',
-    cursor: 'pointer',
-  },
-  infoRow: { display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' },
-  badge: {
-    background: '#111827', border: '1px solid #2d3748',
-    borderRadius: '50px', padding: '7px 14px',
-    display: 'flex', gap: '6px', alignItems: 'center', color: '#e2e8f0',
-    fontSize: '12px',
-  },
 }
 
 export default HomeScreen

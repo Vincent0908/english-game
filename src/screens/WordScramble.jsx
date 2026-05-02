@@ -1,433 +1,183 @@
 import { useState, useEffect } from 'react'
+import { GameHeader, GameResult } from './VocabularyMatch'
 
 const ALL_WORDS = [
-    { word: 'ADVENTURE', hint: 'An exciting or unusual experience' },
-    { word: 'BEAUTIFUL', hint: 'Pleasing to the senses or mind' },
-    { word: 'CHALLENGE', hint: 'Something difficult that requires effort' },
-    { word: 'DISCOVER', hint: 'To find something for the first time' },
-    { word: 'ELEPHANT', hint: 'The largest land animal on Earth' },
-    { word: 'FREEDOM', hint: 'The power to act or speak without restraint' },
-    { word: 'GRATEFUL', hint: 'Feeling thankful for something received' },
-    { word: 'HORIZON', hint: 'The line where sky meets the earth' },
-    { word: 'IMAGINE', hint: 'To form a picture in your mind' },
-    { word: 'JOURNEY', hint: 'Traveling from one place to another' },
-    { word: 'KNOWLEDGE', hint: 'Facts and information acquired through learning' },
-    { word: 'LANGUAGE', hint: 'A system of communication used by people' },
-    { word: 'MOUNTAIN', hint: 'A large natural elevation of earth' },
-    { word: 'NOTEBOOK', hint: 'A book with blank pages for writing' },
-    { word: 'PATIENCE', hint: 'Calm endurance of hardship or delay' },
-    { word: 'QUESTION', hint: 'A sentence asking for information' },
-    { word: 'RAINBOW', hint: 'A colorful arc seen after rain' },
-    { word: 'STRENGTH', hint: 'Physical or mental power and energy' },
-    { word: 'TREASURE', hint: 'A collection of valuable things' },
-    { word: 'UNIVERSE', hint: 'All of space and everything in it' },
+  { word: 'ADVENTURE',  hint: 'An exciting or unusual experience' },
+  { word: 'BEAUTIFUL',  hint: 'Pleasing to the senses or mind' },
+  { word: 'CHALLENGE',  hint: 'Something difficult that requires effort' },
+  { word: 'DISCOVER',   hint: 'To find something for the first time' },
+  { word: 'ELEPHANT',   hint: 'The largest land animal on Earth' },
+  { word: 'FREEDOM',    hint: 'The power to act or speak without restraint' },
+  { word: 'GRATEFUL',   hint: 'Feeling thankful for something received' },
+  { word: 'HORIZON',    hint: 'The line where sky meets the earth' },
+  { word: 'IMAGINE',    hint: 'To form a picture in your mind' },
+  { word: 'JOURNEY',    hint: 'Traveling from one place to another' },
+  { word: 'KNOWLEDGE',  hint: 'Facts and information acquired through learning' },
+  { word: 'LANGUAGE',   hint: 'A system of communication used by people' },
+  { word: 'MOUNTAIN',   hint: 'A large natural elevation of earth' },
+  { word: 'NOTEBOOK',   hint: 'A book with blank pages for writing' },
+  { word: 'PATIENCE',   hint: 'Calm endurance of hardship or delay' },
+  { word: 'QUESTION',   hint: 'A sentence asking for information' },
+  { word: 'RAINBOW',    hint: 'A colorful arc seen after rain' },
+  { word: 'STRENGTH',   hint: 'Physical or mental power and energy' },
+  { word: 'TREASURE',   hint: 'A collection of valuable things' },
+  { word: 'UNIVERSE',   hint: 'All of space and everything in it' },
 ]
 
 const TOTAL_QUESTIONS = 8
 const TIME_PER_QUESTION = 20
 
-function shuffle(arr) {
-    return [...arr].sort(() => Math.random() - 0.5)
-}
-
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5) }
 function scrambleWord(word) {
-    let result
-    do {
-        result = shuffle(word.split('')).join('')
-    } while (result === word)
-    return result
+  let r; do { r = shuffle(word.split('')).join('') } while (r === word); return r
 }
 
 function WordScramble({ navigate, completeGame }) {
-    const [questions] = useState(() => shuffle(ALL_WORDS).slice(0, TOTAL_QUESTIONS))
-    const [index, setIndex] = useState(0)
-    const [scrambled, setScrambled] = useState([])
-    const [answer, setAnswer] = useState([])
-    const [timer, setTimer] = useState(TIME_PER_QUESTION)
-    const [phase, setPhase] = useState('playing')
-    const [feedback, setFeedback] = useState(null)
-    const [score, setScore] = useState(0)
-    const [results, setResults] = useState([])
-    const [showHint, setShowHint] = useState(false)
-    const [revealedPositions, setRevealedPositions] = useState([])
+  const [questions]         = useState(() => shuffle(ALL_WORDS).slice(0, TOTAL_QUESTIONS))
+  const [index,              setIndex]            = useState(0)
+  const [scrambled,          setScrambled]        = useState([])
+  const [answer,             setAnswer]           = useState([])
+  const [timer,              setTimer]            = useState(TIME_PER_QUESTION)
+  const [phase,              setPhase]            = useState('playing')
+  const [feedback,           setFeedback]         = useState(null)
+  const [score,              setScore]            = useState(0)
+  const [results,            setResults]          = useState([])
+  const [showHint,           setShowHint]         = useState(false)
+  const [revealedPositions,  setRevealedPositions] = useState([])
 
-    const currentQ = questions[index]
+  const currentQ = questions[index]
 
-    // Reset tiap soal baru
-    useEffect(() => {
-        const letters = scrambleWord(currentQ.word).split('').map((char, i) => ({
-            char,
-            id: `${i}-${char}`
-        }))
-        setScrambled(letters)
-        setAnswer([])
-        setTimer(TIME_PER_QUESTION)
-        setFeedback(null)
-        setShowHint(false)
-        setRevealedPositions([])
-    }, [index])
+  useEffect(() => {
+    setScrambled(scrambleWord(currentQ.word).split('').map((char, i) => ({ char, id: `${i}-${char}` })))
+    setAnswer([]); setTimer(TIME_PER_QUESTION); setFeedback(null); setShowHint(false); setRevealedPositions([])
+  }, [index])
 
-    // Timer countdown
-    useEffect(() => {
-        if (phase !== 'playing' || feedback !== null) return
-        if (timer === 0) {
-            handleTimeout()
-            return
-        }
-        const interval = setInterval(() => setTimer(t => t - 1), 1000)
-        return () => clearInterval(interval)
-    }, [timer, phase, feedback])
+  useEffect(() => {
+    if (phase !== 'playing' || feedback !== null) return
+    if (timer === 0) { handleTimeout(); return }
+    const id = setInterval(() => setTimer(t => t - 1), 1000)
+    return () => clearInterval(id)
+  }, [timer, phase, feedback])
 
-    // Auto-cek jawaban
-    useEffect(() => {
-        if (answer.length === 0) return
-        if (answer.filter(Boolean).length === currentQ.word.length) {
-            const typed = currentQ.word.split('').map((_, i) => answer[i]?.char ?? '').join('')
-            if (typed === currentQ.word) {
-                handleResult(true)
-            } else {
-                handleResult(false)
-            }
-        }
-    }, [answer])
-
-    const handleTimeout = () => {
-        setFeedback('timeout')
-        setResults(prev => [...prev, { word: currentQ.word, isCorrect: false }])
-        setTimeout(() => {
-            if (index + 1 >= TOTAL_QUESTIONS) setPhase('result')
-            else setIndex(i => i + 1)
-        }, 1200)
+  useEffect(() => {
+    if (!answer.length) return
+    if (answer.filter(Boolean).length === currentQ.word.length) {
+      const typed = currentQ.word.split('').map((_, i) => answer[i]?.char ?? '').join('')
+      handleResult(typed === currentQ.word)
     }
+  }, [answer])
 
-    const handleResult = (isCorrect) => {
-        setFeedback(isCorrect ? 'correct' : 'wrong')
-        if (isCorrect) setScore(s => s + 10)
-        setResults(prev => [...prev, { word: currentQ.word, isCorrect }])
-        setTimeout(() => {
-            if (index + 1 >= TOTAL_QUESTIONS) setPhase('result')
-            else setIndex(i => i + 1)
-        }, 1200)
-    }
+  const goNext = () => setTimeout(() => { if (index + 1 >= TOTAL_QUESTIONS) setPhase('result'); else setIndex(i => i + 1) }, 1200)
 
-    const pickLetter = (letter) => {
-        if (feedback !== null) return
-        setScrambled(prev => prev.filter(l => l.id !== letter.id))
-        setAnswer(prev => {
-            const newAnswer = [...prev]
-            // Isi slot kosong pertama
-            const emptyIndex = currentQ.word.split('').findIndex((_, i) => !newAnswer[i])
-            if (emptyIndex !== -1) newAnswer[emptyIndex] = letter
-            return newAnswer
-        })
-    }
+  const handleTimeout = () => { setFeedback('timeout'); setResults(p => [...p, { word: currentQ.word, isCorrect: false }]); goNext() }
+  const handleResult  = (ok) => { setFeedback(ok ? 'correct' : 'wrong'); if (ok) setScore(s => s + 10); setResults(p => [...p, { word: currentQ.word, isCorrect: ok }]); goNext() }
 
-    const returnLetter = (pos) => {
-        if (feedback !== null) return
-        if (revealedPositions.includes(pos)) return
-        const letter = answer[pos]
-        if (!letter) return
-        setAnswer(prev => {
-            const newAnswer = [...prev]
-            newAnswer[pos] = undefined
-            return newAnswer
-        })
-        setScrambled(prev => [...prev, letter])
-    }
+  const pickLetter = (letter) => {
+    if (feedback) return
+    setScrambled(p => p.filter(l => l.id !== letter.id))
+    setAnswer(p => { const a = [...p]; const ei = currentQ.word.split('').findIndex((_, i) => !a[i]); if (ei !== -1) a[ei] = letter; return a })
+  }
 
-    const handleClear = () => {
-        if (feedback !== null) return
-        const toReturn = answer.filter((l, i) => l && !revealedPositions.includes(i))
-        setScrambled(prev => [...prev, ...toReturn])
-        setAnswer(prev => prev.map((l, i) => revealedPositions.includes(i) ? l : undefined))
-    }
+  const returnLetter = (pos) => {
+    if (feedback || revealedPositions.includes(pos)) return
+    const letter = answer[pos]; if (!letter) return
+    setAnswer(p => { const a = [...p]; a[pos] = undefined; return a })
+    setScrambled(p => [...p, letter])
+  }
 
-    const handleReveal = () => {
-        if (feedback !== null) return
-        const unfilledPositions = currentQ.word.split('')
-            .map((char, i) => ({ char, i }))
-            .filter(({ i }) => !answer[i] && !revealedPositions.includes(i))
+  const handleClear = () => {
+    if (feedback) return
+    setScrambled(p => [...p, ...answer.filter((l, i) => l && !revealedPositions.includes(i))])
+    setAnswer(p => p.map((l, i) => revealedPositions.includes(i) ? l : undefined))
+  }
 
-        if (unfilledPositions.length === 0) return
+  const handleReveal = () => {
+    if (feedback) return
+    const unfilled = currentQ.word.split('').map((char, i) => ({ char, i })).filter(({ i }) => !answer[i] && !revealedPositions.includes(i))
+    if (!unfilled.length) return
+    const { char, i: pos } = unfilled[0]
+    setRevealedPositions(p => [...p, pos]); setScore(s => Math.max(0, s - 5))
+    const inBank = scrambled.find(l => l.char === char)
+    if (inBank) { setScrambled(p => p.filter(l => l.id !== inBank.id)); setAnswer(p => { const a = [...p]; a[pos] = inBank; return a }) }
+  }
 
-        const { char, i: pos } = unfilledPositions[0]
-
-        setRevealedPositions(prev => [...prev, pos])
-        setScore(s => Math.max(0, s - 5))
-
-        const letterInBank = scrambled.find(l => l.char === char)
-        if (letterInBank) {
-            setScrambled(prev => prev.filter(l => l.id !== letterInBank.id))
-            setAnswer(prev => {
-                const newAnswer = [...prev]
-                newAnswer[pos] = letterInBank
-                return newAnswer
-            })
-        }
-    }
-
-    if (phase === 'result') {
-        return (
-            <ScrambleResult
-                score={score}
-                total={TOTAL_QUESTIONS}
-                results={results}
-                onFinish={() => {
-                    const xpEarned = Math.round((score / (TOTAL_QUESTIONS * 10)) * 100)
-                    completeGame('scramble', score, xpEarned)
-                }}
-            />
-        )
-    }
-
-    const progress = (index / TOTAL_QUESTIONS) * 100
-    const timerColor = timer <= 5 ? '#ff6b6b' : timer <= 10 ? '#f59e0b' : '#00e5a0'
-    const feedbackBg = feedback === 'correct' ? '#10b98115' : feedback ? '#ff6b6b15' : 'transparent'
-    const feedbackBorder = feedback === 'correct' ? '#10b981' : feedback ? '#ff6b6b' : '#2d3748'
-
+  if (phase === 'result') {
+    const xp = Math.round((score / (TOTAL_QUESTIONS * 10)) * 100)
     return (
-        <div style={styles.container}>
-            {/* Header */}
-            <div style={styles.header}>
-                <button style={styles.backBtn} onClick={() => navigate('select')}>← Back</button>
-                <div style={styles.headerCenter}>
-                    <p style={styles.headerTitle}>🔀 Word Scramble</p>
-                    <div style={styles.progressBar}>
-                        <div style={{ ...styles.progressFill, width: `${progress}%` }} />
-                    </div>
-                    <p style={styles.progressText}>{index + 1} / {TOTAL_QUESTIONS}</p>
-                </div>
-                <div style={styles.scoreDisplay}>
-                    <p style={styles.scoreLbl}>Score</p>
-                    <p style={styles.scoreVal}>{score}</p>
-                </div>
-            </div>
+      <GameResult score={score} total={TOTAL_QUESTIONS} xp={xp} onFinish={() => completeGame('scramble', score, xp)}>
+        {results.map((r, i) => (
+          <div key={i} className={`flex justify-between items-center bg-navy rounded-xl px-4 py-2.5 border text-sm gap-3 ${r.isCorrect ? 'border-emerald-500/30' : 'border-danger/30'}`}>
+            <span className="font-extrabold tracking-widest text-slate-200">{r.word}</span>
+            <span className={`font-bold ${r.isCorrect ? 'text-emerald-400' : 'text-danger'}`}>{r.isCorrect ? '✓ Correct' : '✗ Wrong'}</span>
+          </div>
+        ))}
+      </GameResult>
+    )
+  }
 
-            {/* Timer */}
-            <div style={styles.timerWrap}>
-                <div style={{ ...styles.timerCircle, borderColor: timerColor, color: timerColor }}>
-                    {timer}
-                </div>
-                <p style={{ color: '#94a3b8', fontSize: '12px' }}>seconds left</p>
-            </div>
+  const timerColor   = timer <= 5 ? 'border-danger text-danger' : timer <= 10 ? 'border-amber-400 text-amber-400' : 'border-teal text-teal'
+  const cardBorder   = feedback === 'correct' ? 'border-emerald-500 bg-emerald-500/5' : feedback ? 'border-danger bg-danger/5' : 'border-dim bg-panel'
 
-            {/* Kartu Soal */}
-            <div style={{ ...styles.questionCard, background: feedbackBg, borderColor: feedbackBorder }}>
-                <p style={styles.questionLabel}>Unscramble this word:</p>
+  return (
+    <div className="min-h-screen bg-game px-6 py-6 max-w-2xl mx-auto flex flex-col gap-5">
+      <GameHeader title="🔀 Word Scramble" index={index} total={TOTAL_QUESTIONS} score={score} progress={index / TOTAL_QUESTIONS * 100} barColor="from-emerald-500 to-blue-500" navigate={navigate} />
 
-                {/* Kotak Jawaban */}
-                <div style={styles.answerRow}>
-                    {currentQ.word.split('').map((_, i) => {
-                        const letter = answer[i]
-                        const isRevealed = revealedPositions.includes(i)
-                        return (
-                            <div
-                                key={i}
-                                style={{
-                                    ...styles.letterBox,
-                                    background: isRevealed ? '#2d1b69' : letter ? '#1a3a5c' : '#1a2235',
-                                    borderColor: isRevealed ? '#a855f7' : letter ? '#3b82f6' : '#2d3748',
-                                    cursor: letter && !isRevealed ? 'pointer' : 'default',
-                                }}
-                                onClick={() => returnLetter(i)}
-                            >
-                                <span style={{ ...styles.letterChar, color: isRevealed ? '#a855f7' : '#e2e8f0' }}>
-                                    {letter ? letter.char : ''}
-                                </span>
-                            </div>
-                        )
-                    })}
-                </div>
+      <div className="flex flex-col items-center gap-1">
+        <div className={`w-14 h-14 rounded-full border-[3px] flex items-center justify-center text-xl font-extrabold transition-colors ${timerColor}`}>{timer}</div>
+        <p className="text-slate-400 text-xs">seconds left</p>
+      </div>
 
-                {/* Feedback */}
-                {feedback && (
-                    <p style={{
-                        color: feedback === 'correct' ? '#10b981' : feedback === 'wrong' ? '#ff6b6b' : '#f59e0b',
-                        fontWeight: 800, fontSize: '16px', marginTop: '8px',
-                    }}>
-                        {feedback === 'correct'
-                            ? '✓ Correct! +10 pts'
-                            : feedback === 'wrong'
-                                ? `✗ Wrong! It was: ${currentQ.word}`
-                                : `⏱ Time's up! Answer: ${currentQ.word}`}
-                    </p>
-                )}
+      <div className={`border rounded-2xl px-7 py-7 text-center flex flex-col items-center gap-4 transition-all ${cardBorder}`}>
+        <p className="text-slate-400 text-sm">Unscramble this word:</p>
 
-                {/* Tombol Hint & Reveal */}
-                {!feedback && (
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                        <button style={styles.hintBtn} onClick={() => setShowHint(h => !h)}>
-                            {showHint ? '🙈 Hide Hint' : '💡 Show Hint'}
-                        </button>
-                        <button
-                            style={{ ...styles.hintBtn, borderColor: '#a855f744', color: '#a855f7', background: '#a855f711' }}
-                            onClick={handleReveal}
-                        >
-                            🔍 Reveal Letter <span style={{ color: '#ff6b6b', fontSize: '11px' }}>(-5 pts)</span>
-                        </button>
-                    </div>
-                )}
+        <div className="flex gap-2 flex-wrap justify-center">
+          {currentQ.word.split('').map((_, i) => {
+            const letter = answer[i]; const isRevealed = revealedPositions.includes(i)
+            return (
+              <div key={i}
+                className={`w-11 h-12 rounded-xl border-2 flex items-center justify-center transition-all ${isRevealed ? 'bg-purple-900/60 border-purple-500 cursor-default' : letter ? 'bg-[#1a3a5c] border-blue-500 cursor-pointer' : 'bg-navy border-dim cursor-default'}`}
+                onClick={() => returnLetter(i)}
+              >
+                <span className={`font-extrabold text-xl ${isRevealed ? 'text-purple-400' : 'text-slate-200'}`}>{letter ? letter.char : ''}</span>
+              </div>
+            )
+          })}
+        </div>
 
-                {showHint && !feedback && (
-                    <p style={styles.hintText}>💡 {currentQ.hint}</p>
-                )}
-            </div>
+        {feedback && (
+          <p className={`font-extrabold text-base ${feedback === 'correct' ? 'text-emerald-400' : feedback === 'wrong' ? 'text-danger' : 'text-amber-400'}`}>
+            {feedback === 'correct' ? '✓ Correct! +10 pts' : feedback === 'wrong' ? `✗ Wrong! It was: ${currentQ.word}` : `⏱ Time's up! Answer: ${currentQ.word}`}
+          </p>
+        )}
 
-            {/* Bank Huruf */}
-            <div style={styles.bankSection}>
-                <p style={styles.bankLabel}>Available Letters — tap to place:</p>
-                <div style={styles.bankRow}>
-                    {scrambled.map((letter) => (
-                        <button
-                            key={letter.id}
-                            style={styles.bankLetter}
-                            onClick={() => pickLetter(letter)}
-                            disabled={feedback !== null}
-                        >
-                            {letter.char}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Tombol Clear */}
-            <button style={styles.clearBtn} onClick={handleClear} disabled={feedback !== null}>
-                🗑️ Clear Answer
+        {!feedback && (
+          <div className="flex gap-2 flex-wrap justify-center">
+            <button className="bg-transparent border border-dim text-slate-400 rounded-lg px-3 py-1.5 text-sm hover:text-slate-200 transition-colors" onClick={() => setShowHint(h => !h)}>
+              {showHint ? '🙈 Hide Hint' : '💡 Show Hint'}
             </button>
+            <button className="bg-purple-500/10 border border-purple-500/30 text-purple-400 rounded-lg px-3 py-1.5 text-sm hover:bg-purple-500/20 transition-colors" onClick={handleReveal}>
+              🔍 Reveal Letter <span className="text-danger text-xs">(-5 pts)</span>
+            </button>
+          </div>
+        )}
+        {showHint && !feedback && <p className="text-amber-400 text-sm italic bg-amber-400/10 rounded-xl px-4 py-2">💡 {currentQ.hint}</p>}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <p className="text-slate-400 text-sm text-center">Available Letters — tap to place:</p>
+        <div className="flex gap-2.5 flex-wrap justify-center">
+          {scrambled.map(letter => (
+            <button key={letter.id} className="w-12 h-14 rounded-xl bg-[#1a3a5c] border-2 border-blue-500 text-slate-200 font-extrabold text-xl hover:-translate-y-1 hover:scale-105 hover:shadow-[0_6px_16px_#3b82f640] active:scale-95 transition-all disabled:opacity-40"
+              onClick={() => pickLetter(letter)} disabled={!!feedback}>{letter.char}</button>
+          ))}
         </div>
-    )
-}
+      </div>
 
-function ScrambleResult({ score, total, results, onFinish }) {
-    const percentage = Math.round((score / (total * 10)) * 100)
-    const xpEarned = Math.round(percentage)
-    const emoji = percentage === 100 ? '🏆' : percentage >= 70 ? '⭐' : percentage >= 40 ? '👍' : '💪'
-
-    return (
-        <div style={styles.container}>
-            <div style={styles.resultBox}>
-                <p style={{ fontSize: '64px' }}>{emoji}</p>
-                <h2 style={styles.resultTitle}>Quest Complete!</h2>
-                <p style={styles.resultScore}>
-                    {score} <span style={{ fontSize: '18px', color: '#94a3b8' }}>/ {total * 10} pts</span>
-                </p>
-                <p style={{ color: '#ffd700', fontWeight: 700 }}>+{xpEarned} XP earned!</p>
-                <div style={styles.recapList}>
-                    {results.map((r, i) => (
-                        <div key={i} style={{ ...styles.recapRow, borderColor: r.isCorrect ? '#10b98144' : '#ff6b6b44' }}>
-                            <span style={{ fontWeight: 800, letterSpacing: '2px' }}>{r.word}</span>
-                            <span style={{ color: r.isCorrect ? '#10b981' : '#ff6b6b', fontWeight: 700 }}>
-                                {r.isCorrect ? '✓ Correct' : '✗ Wrong'}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-                <button style={styles.btnFinish} onClick={onFinish}>
-                    Back to Quest Map
-                </button>
-            </div>
-        </div>
-    )
-}
-
-const styles = {
-    container: {
-        minHeight: '100vh',
-        background: 'radial-gradient(ellipse at top, #0f1e3d 0%, #0a0e1a 60%)',
-        padding: '24px', maxWidth: '600px', margin: '0 auto',
-        display: 'flex', flexDirection: 'column', gap: '20px',
-    },
-    header: {
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px',
-        background: '#111827', borderRadius: '16px',
-        padding: '16px 20px', border: '1px solid #2d3748',
-    },
-    backBtn: {
-        background: 'none', border: '1px solid #2d3748',
-        color: '#94a3b8', borderRadius: '8px',
-        padding: '8px 12px', fontSize: '13px', cursor: 'pointer',
-    },
-    headerCenter: { flex: 1, textAlign: 'center' },
-    headerTitle: { color: '#e2e8f0', fontWeight: 800, marginBottom: '8px' },
-    progressBar: {
-        background: '#1a2235', borderRadius: '999px', height: '6px', overflow: 'hidden',
-    },
-    progressFill: {
-        background: 'linear-gradient(90deg, #10b981, #3b82f6)',
-        height: '100%', borderRadius: '999px', transition: 'width 0.4s ease',
-    },
-    progressText: { color: '#94a3b8', fontSize: '12px', marginTop: '4px' },
-    scoreDisplay: { textAlign: 'right' },
-    scoreLbl: { color: '#94a3b8', fontSize: '12px' },
-    scoreVal: { color: '#ffd700', fontWeight: 800, fontSize: '22px' },
-    timerWrap: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' },
-    timerCircle: {
-        width: '60px', height: '60px', borderRadius: '50%',
-        border: '3px solid', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: '22px', fontWeight: 800, transition: 'color 0.3s, border-color 0.3s',
-    },
-    questionCard: {
-        border: '1px solid', borderRadius: '20px', padding: '28px',
-        textAlign: 'center', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', gap: '16px', transition: 'all 0.3s',
-    },
-    questionLabel: { color: '#94a3b8', fontSize: '14px' },
-    answerRow: { display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' },
-    letterBox: {
-        width: '44px', height: '52px', borderRadius: '10px',
-        border: '2px solid', display: 'flex', alignItems: 'center',
-        justifyContent: 'center', transition: 'all 0.15s',
-    },
-    letterChar: { fontWeight: 800, fontSize: '20px' },
-    hintBtn: {
-        background: 'none', border: '1px solid #2d3748',
-        color: '#94a3b8', borderRadius: '8px',
-        padding: '6px 14px', fontSize: '13px', cursor: 'pointer',
-        fontFamily: "'Nunito', sans-serif",
-    },
-    hintText: {
-        color: '#f59e0b', fontSize: '13px', fontStyle: 'italic',
-        background: '#f59e0b11', borderRadius: '8px', padding: '8px 14px',
-    },
-    bankSection: { display: 'flex', flexDirection: 'column', gap: '10px' },
-    bankLabel: { color: '#94a3b8', fontSize: '13px', textAlign: 'center' },
-    bankRow: { display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' },
-    bankLetter: {
-        width: '48px', height: '56px', borderRadius: '10px',
-        background: '#1a3a5c', border: '2px solid #3b82f6',
-        color: '#e2e8f0', fontWeight: 800, fontSize: '20px',
-        cursor: 'pointer', transition: 'all 0.15s',
-        fontFamily: "'Nunito', sans-serif",
-    },
-    clearBtn: {
-        background: 'none', border: '1px solid #2d3748',
-        color: '#94a3b8', borderRadius: '10px', padding: '12px',
-        fontSize: '14px', cursor: 'pointer', fontFamily: "'Nunito', sans-serif",
-    },
-    resultBox: {
-        margin: 'auto', textAlign: 'center',
-        background: '#111827', border: '1px solid #2d3748',
-        borderRadius: '24px', padding: '40px 32px',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', width: '100%',
-    },
-    resultTitle: {
-        fontFamily: "'Cinzel Decorative', cursive", color: '#ffd700', fontSize: '24px',
-    },
-    resultScore: { fontSize: '48px', fontWeight: 800, color: '#e2e8f0' },
-    recapList: {
-        width: '100%', display: 'flex', flexDirection: 'column',
-        gap: '8px', maxHeight: '240px', overflowY: 'auto', marginTop: '8px',
-    },
-    recapRow: {
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        background: '#1a2235', borderRadius: '8px', padding: '10px 14px',
-        border: '1px solid', fontSize: '13px', color: '#e2e8f0', gap: '12px', flexWrap: 'wrap',
-    },
-    btnFinish: {
-        background: 'linear-gradient(135deg, #ffd700, #ff8c00)',
-        border: 'none', borderRadius: '12px', padding: '14px 32px',
-        color: '#0a0e1a', fontWeight: 800, fontSize: '16px', marginTop: '8px', cursor: 'pointer',
-    },
+      <button className="bg-transparent border border-dim text-slate-400 rounded-xl py-3 text-sm hover:text-slate-200 transition-colors disabled:opacity-40" onClick={handleClear} disabled={!!feedback}>
+        🗑️ Clear Answer
+      </button>
+    </div>
+  )
 }
 
 export default WordScramble
