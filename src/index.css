@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Nunito:wght@400;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-dark:    #0a0e1a;
+  --bg-panel:   #111827;
+  --bg-card:    #1a2235;
+  --gold:       #ffd700;
+  --gold-light: #ffe566;
+  --teal:       #00e5a0;
+  --red:        #ff6b6b;
+  --text:       #e2e8f0;
+  --text-dim:   #94a3b8;
+  --border:     #2d3748;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* ===================== ANIMASI GLOBAL ===================== */
+
+@keyframes twinkle {
+  0%   { opacity: 0.15; transform: scale(0.8); }
+  100% { opacity: 1;    transform: scale(1.3); }
+}
+
+@keyframes float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 #ffd70033; }
+  50%       { box-shadow: 0 0 0 12px #ffd70000; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes bounce-in {
+  0%   { transform: scale(0.3); opacity: 0; }
+  50%  { transform: scale(1.1); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes streak-pop {
+  0%   { transform: translateX(-50%) scale(0.5); opacity: 0; }
+  60%  { transform: translateX(-50%) scale(1.15); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+/* ===================== UTILITY CLASSES ===================== */
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.4s ease forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ===================== HOVER INTERAKTIF ===================== */
+
+.game-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+.game-card:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 12px 40px #ffd70015 !important;
+}
+.game-card:active {
+  transform: translateY(-1px) scale(0.99) !important;
+}
+
+.btn-start:hover {
+  transform: translateY(-2px) scale(1.03) !important;
+  box-shadow: 0 8px 24px #ffd70040 !important;
+}
+.btn-start:active {
+  transform: scale(0.97) !important;
+}
+
+.option-btn:not(:disabled):hover {
+  transform: translateX(4px) !important;
+  border-color: #4b9fff !important;
+}
+
+.bank-letter:not(:disabled):hover {
+  transform: translateY(-3px) scale(1.08) !important;
+  box-shadow: 0 6px 16px #3b82f640 !important;
+}
+
+.bank-word:not(:disabled):hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 16px #f59e0b40 !important;
+}
+
+.answer-word:hover {
+  background: #162d4a !important;
+  transform: scale(0.97) !important;
+}
+
+/* ===================== SCROLLBAR ===================== */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #111827; }
+::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #4b5563; }
