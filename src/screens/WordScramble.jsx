@@ -86,13 +86,15 @@ function WordScramble({ navigate, completeGame }) {
   }, [timer, phase, feedback, handleTimeout])
 
   // Auto-cek jawaban
-  useEffect(() => {
-    if (!answer.length) return
-    if (answer.filter(Boolean).length === currentQ.word.length) {
-      const typed = currentQ.word.split('').map((_, i) => answer[i]?.char ?? '').join('')
-      handleResult(typed === currentQ.word)
-    }
-  }, [answer, currentQ.word, handleResult])
+useEffect(() => {
+  // Tambah pengecekan: feedback harus null (belum dijawab) dan phase harus playing
+  if (!answer.length) return
+  if (feedback !== null) return
+  if (answer.filter(Boolean).length === currentQ.word.length) {
+    const typed = currentQ.word.split('').map((_, i) => answer[i]?.char ?? '').join('')
+    handleResult(typed === currentQ.word)
+  }
+}, [answer, currentQ.word, handleResult, feedback])
 
   const pickLetter = (letter) => {
     if (feedback) return
