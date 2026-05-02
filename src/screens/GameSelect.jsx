@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 
 const GAMES = [
   { id: 'vocab',    icon: '🔤', title: 'Vocabulary Match',  desc: 'Match English words with their Indonesian meaning',      level: 'Beginner',     color: '#3b82f6', xp: 100 },
