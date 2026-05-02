@@ -2,21 +2,21 @@ import { useState, useEffect, useCallback } from 'react'
 import { GameHeader } from './VocabularyMatch'
 
 const ALL_QUESTIONS = [
-  { question: 'She ___ to school every day.',                    options: ['go','goes','going','gone'],                              correct: 'goes',           explanation: 'Subject "She" (third person singular) → Simple Present pakai "goes" bukan "go".',  category: 'Subject-Verb Agreement' },
-  { question: 'They ___ watching TV when I called.',             options: ['was','were','are','is'],                                 correct: 'were',           explanation: '"They" adalah plural → Past Continuous menggunakan "were", bukan "was".',          category: 'Past Continuous' },
-  { question: 'I have lived here ___ 2018.',                     options: ['since','for','from','at'],                              correct: 'since',          explanation: '"Since" untuk titik waktu tertentu. "For" untuk durasi.',                           category: 'Preposition of Time' },
-  { question: 'She is ___ honest student.',                      options: ['a','an','the','-'],                                     correct: 'an',             explanation: '"An" sebelum bunyi vokal. "Honest" diucapkan /ɒnɪst/ → vokal "o".',                category: 'Article' },
-  { question: 'If it rains, we ___ stay at home.',               options: ['will','would','shall','should'],                        correct: 'will',           explanation: 'Conditional Type 1: If + Simple Present → will + base verb.',                      category: 'Conditional' },
-  { question: 'He ___ finish the task yet.',                     options: ["hasn't","didn't","isn't","wasn't"],                     correct: "hasn't",         explanation: '"Yet" → Present Perfect: hasn\'t + past participle.',                              category: 'Present Perfect' },
-  { question: 'The book was written ___ J.K. Rowling.',          options: ['by','from','with','of'],                               correct: 'by',             explanation: 'Passive voice menggunakan "by" untuk menyebut pelaku.',                             category: 'Passive Voice' },
-  { question: 'She speaks English ___ than her brother.',        options: ['more fluently','most fluently','fluenter','fluently'],  correct: 'more fluently',  explanation: 'Comparative adverb: "more + adverb" untuk adverb panjang.',                         category: 'Comparative' },
-  { question: 'Neither the students nor the teacher ___ ready.', options: ['was','were','are','is'],                               correct: 'was',            explanation: 'Neither...nor → verb ikuti subject terdekat. "The teacher" (singular) → "was".',   category: 'Subject-Verb Agreement' },
-  { question: "You ___ smoke here. It's prohibited.",            options: ["mustn't","don't have to","shouldn't","needn't"],       correct: "mustn't",        explanation: '"Mustn\'t" = dilarang keras. "Don\'t have to" = tidak wajib.',                     category: 'Modal Verb' },
-  { question: 'I wish I ___ fly like a bird.',                   options: ['could','can','will','would'],                          correct: 'could',          explanation: '"Wish" untuk situasi tidak nyata → past modal "could".',                           category: 'Subjunctive' },
-  { question: '___ you mind closing the window?',                options: ['Would','Will','Do','Should'],                          correct: 'Would',          explanation: '"Would you mind + Verb-ing?" adalah ekspresi sopan yang paling umum.',             category: 'Polite Request' },
-  { question: 'She suggested ___ to the cinema.',                options: ['going','to go','go','went'],                           correct: 'going',          explanation: '"Suggest" selalu diikuti Verb-ing (gerund).',                                       category: 'Gerund vs Infinitive' },
-  { question: 'By next year, she ___ her degree.',               options: ['will have completed','will complete','has completed','completes'], correct: 'will have completed', explanation: 'Future Perfect: will have + past participle.', category: 'Future Perfect' },
-  { question: 'The news ___ surprising to everyone.',            options: ['was','were','are','have been'],                        correct: 'was',            explanation: '"News" adalah uncountable noun → verb singular "was".',                            category: 'Uncountable Noun' },
+  { question: 'She ___ to school every day.', options: ['go', 'goes', 'going', 'gone'], correct: 'goes', hint: 'Subject orang ketiga tunggal (he/she/it) → tambahkan -s/-es di akhir verb.', explanation: 'Subject "She" (third person singular) → Simple Present pakai "goes" bukan "go".', category: 'Subject-Verb Agreement' },
+  { question: 'They ___ watching TV when I called.', options: ['was', 'were', 'are', 'is'], correct: 'were', hint: 'Kata "They" adalah jamak. Past Continuous butuh "to be" bentuk lampau.', explanation: '"They" adalah plural → Past Continuous menggunakan "were", bukan "was".', category: 'Past Continuous' },
+  { question: 'I have lived here ___ 2018.', options: ['since', 'for', 'from', 'at'], correct: 'since', hint: '2018 adalah titik waktu tertentu, bukan durasi.', explanation: '"Since" untuk titik waktu tertentu. "For" untuk durasi.', category: 'Preposition of Time' },
+  { question: 'She is ___ honest student.', options: ['a', 'an', 'the', '-'], correct: 'an', hint: 'Perhatikan bunyi awal kata "honest" saat diucapkan, bukan huruf tulisannya.', explanation: '"An" sebelum bunyi vokal. "Honest" diucapkan /ɒnɪst/ → vokal "o".', category: 'Article' },
+  { question: 'If it rains, we ___ stay at home.', options: ['will', 'would', 'shall', 'should'], correct: 'will', hint: 'Kondisi ini nyata dan mungkin terjadi. Bukan situasi khayalan.', explanation: 'Conditional Type 1: If + Simple Present → will + base verb.', category: 'Conditional' },
+  { question: 'He ___ finish the task yet.', options: ["hasn't", "didn't", "isn't", "wasn't"], correct: "hasn't", hint: 'Kata "yet" selalu dipakai bersama Present Perfect untuk menyatakan belum selesai.', explanation: '"Yet" → Present Perfect: hasn\'t + past participle.', category: 'Present Perfect' },
+  { question: 'The book was written ___ J.K. Rowling.', options: ['by', 'from', 'with', 'of'], correct: 'by', hint: 'Kalimat ini adalah Passive Voice. Siapa yang melakukan aksi?', explanation: 'Passive voice menggunakan "by" untuk menyebut pelaku.', category: 'Passive Voice' },
+  { question: 'She speaks English ___ than her brother.', options: ['more fluently', 'most fluently', 'fluenter', 'fluently'], correct: 'more fluently', hint: 'Membandingkan dua orang → bentuk comparative. "Fluently" adalah adverb panjang.', explanation: 'Comparative adverb: "more + adverb" untuk adverb panjang.', category: 'Comparative' },
+  { question: 'Neither the students nor the teacher ___ ready.', options: ['was', 'were', 'are', 'is'], correct: 'was', hint: 'Pada "neither...nor", verb mengikuti subject yang paling dekat dengannya.', explanation: 'Neither...nor → verb ikuti subject terdekat. "The teacher" (singular) → "was".', category: 'Subject-Verb Agreement' },
+  { question: "You ___ smoke here. It's prohibited.", options: ["mustn't", "don't have to", "shouldn't", "needn't"], correct: "mustn't", hint: '"Prohibited" artinya dilarang keras, bukan sekadar tidak disarankan.', explanation: '"Mustn\'t" = dilarang keras. "Don\'t have to" = tidak wajib.', category: 'Modal Verb' },
+  { question: 'I wish I ___ fly like a bird.', options: ['could', 'can', 'will', 'would'], correct: 'could', hint: '"Wish" menyatakan sesuatu yang tidak nyata/tidak mungkin saat ini.', explanation: '"Wish" untuk situasi tidak nyata → past modal "could".', category: 'Subjunctive' },
+  { question: '___ you mind closing the window?', options: ['Would', 'Will', 'Do', 'Should'], correct: 'Would', hint: 'Ini adalah ekspresi sopan. Pola lengkapnya: ___ you mind + Verb-ing?', explanation: '"Would you mind + Verb-ing?" adalah ekspresi sopan yang paling umum.', category: 'Polite Request' },
+  { question: 'She suggested ___ to the cinema.', options: ['going', 'to go', 'go', 'went'], correct: 'going', hint: 'Beberapa verb selalu diikuti gerund (-ing): suggest, enjoy, avoid, consider.', explanation: '"Suggest" selalu diikuti Verb-ing (gerund).', category: 'Gerund vs Infinitive' },
+  { question: 'By next year, she ___ her degree.', options: ['will have completed', 'will complete', 'has completed', 'completes'], correct: 'will have completed', hint: 'Aksi ini akan selesai sebelum waktu tertentu di masa depan (next year).', explanation: 'Future Perfect: will have + past participle.', category: 'Future Perfect' },
+  { question: 'The news ___ surprising to everyone.', options: ['was', 'were', 'are', 'have been'], correct: 'was', hint: 'Meskipun terdengar jamak, kata ini sebenarnya uncountable noun.', explanation: '"News" adalah uncountable noun → verb singular "was".', category: 'Uncountable Noun' },
 ]
 
 const TOTAL_QUESTIONS = 10
@@ -26,17 +26,18 @@ function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5) }
 
 function GrammarQuiz({ navigate, completeGame }) {
   // ✅ SEMUA useState harus di atas, tidak boleh di dalam if/kondisi
-  const [questions]   = useState(() => shuffle(ALL_QUESTIONS).slice(0, TOTAL_QUESTIONS))
-  const [index,        setIndex]      = useState(0)
-  const [selected,     setSelected]   = useState(null)
-  const [isAnswered,   setIsAnswered]  = useState(false)
-  const [timer,        setTimer]      = useState(TIME_PER_QUESTION)
-  const [phase,        setPhase]      = useState('playing')
-  const [score,        setScore]      = useState(0)
-  const [results,      setResults]    = useState([])
-  const [streak,       setStreak]     = useState(0)
-  const [showStreak,   setShowStreak] = useState(false)
-  const [showDetail,   setShowDetail] = useState(false) // ✅ dipindah ke sini
+  const [questions] = useState(() => shuffle(ALL_QUESTIONS).slice(0, TOTAL_QUESTIONS))
+  const [index, setIndex] = useState(0)
+  const [selected, setSelected] = useState(null)
+  const [isAnswered, setIsAnswered] = useState(false)
+  const [timer, setTimer] = useState(TIME_PER_QUESTION)
+  const [phase, setPhase] = useState('playing')
+  const [score, setScore] = useState(0)
+  const [results, setResults] = useState([])
+  const [streak, setStreak] = useState(0)
+  const [showStreak, setShowStreak] = useState(false)
+  const [showHint, setShowHint] = useState(false)
+  const [showDetail, setShowDetail] = useState(false) // ✅ dipindah ke sini
 
   const currentQ = questions[index]
 
@@ -50,7 +51,9 @@ function GrammarQuiz({ navigate, completeGame }) {
       setStreak(prev => {
         const newStreak = prev + 1
         const pts = newStreak >= 3 ? 15 : 10
-        setScore(s => s + pts)
+        // ✅ Kurangi 3 poin kalau hint dipakai
+        const finalPts = showHint ? Math.max(0, pts - 3) : pts
+        setScore(s => s + finalPts)
         if (newStreak >= 3) { setShowStreak(true); setTimeout(() => setShowStreak(false), 1500) }
         return newStreak
       })
@@ -58,24 +61,25 @@ function GrammarQuiz({ navigate, completeGame }) {
       setStreak(0)
     }
     setResults(prev => [...prev, {
-      question:    currentQ.question,
-      correct:     currentQ.correct,
-      chosen:      option,
+      question: currentQ.question,
+      correct: currentQ.correct,
+      chosen: option,
       explanation: currentQ.explanation,
-      category:    currentQ.category,
-      isCorrect:   ok,
+      category: currentQ.category,
+      isCorrect: ok,
     }])
     setTimeout(() => {
       if (index + 1 >= TOTAL_QUESTIONS) setPhase('result')
       else setIndex(i => i + 1)
     }, 2000)
-  }, [isAnswered, currentQ, index])
+  }, [isAnswered, currentQ, index, showHint])
 
   // Reset tiap soal baru
   useEffect(() => {
     setSelected(null)
     setIsAnswered(false)
     setTimer(TIME_PER_QUESTION)
+    setShowHint(false)
   }, [index])
 
   // Timer
@@ -89,11 +93,11 @@ function GrammarQuiz({ navigate, completeGame }) {
   // ✅ Blok result sekarang hanya return JSX, tidak ada useState di dalamnya
   if (phase === 'result') {
     const maxScore = TOTAL_QUESTIONS * 15
-    const xp       = Math.round((score / maxScore) * 200)
-    const correct  = results.filter(r => r.isCorrect).length
+    const xp = Math.round((score / maxScore) * 200)
+    const correct = results.filter(r => r.isCorrect).length
     const wrongCats = [...new Set(results.filter(r => !r.isCorrect).map(r => r.category))]
-    const pct       = Math.round((score / maxScore) * 100)
-    const emoji     = pct === 100 ? '🏆' : pct >= 70 ? '⭐' : pct >= 40 ? '👍' : '💪'
+    const pct = Math.round((score / maxScore) * 100)
+    const emoji = pct === 100 ? '🏆' : pct >= 70 ? '⭐' : pct >= 40 ? '👍' : '💪'
 
     return (
       <div className="min-h-screen bg-grammar px-6 py-6 max-w-2xl mx-auto flex items-center">
@@ -102,9 +106,9 @@ function GrammarQuiz({ navigate, completeGame }) {
           <h2 className="font-quest text-gold text-2xl">Quest Complete!</h2>
           <div className="grid grid-cols-3 gap-3 w-full">
             {[
-              [score,           'Score',   'text-gold'],
+              [score, 'Score', 'text-gold'],
               [`${correct}/${TOTAL_QUESTIONS}`, 'Correct', 'text-emerald-400'],
-              [`+${xp}`,        'XP',      'text-purple-400'],
+              [`+${xp}`, 'XP', 'text-purple-400'],
             ].map(([val, label, color], i) => (
               <div key={i} className="bg-navy rounded-xl p-4 border border-dim">
                 <p className={`font-extrabold text-xl ${color}`}>{val}</p>
@@ -156,15 +160,15 @@ function GrammarQuiz({ navigate, completeGame }) {
     )
   }
 
-  const timerPct  = (timer / TIME_PER_QUESTION) * 100
-  const timerBg   = timer <= 5 ? 'bg-danger' : timer <= 10 ? 'bg-amber-400' : 'bg-teal'
+  const timerPct = (timer / TIME_PER_QUESTION) * 100
+  const timerBg = timer <= 5 ? 'bg-danger' : timer <= 10 ? 'bg-amber-400' : 'bg-teal'
   const timerText = timer <= 5 ? 'text-danger' : timer <= 10 ? 'text-amber-400' : 'text-teal'
 
   const getOptionClass = (option) => {
     const base = 'flex items-center gap-2.5 px-4 py-3.5 rounded-xl border text-left text-sm font-bold transition-all w-full'
     if (!isAnswered) return `${base} bg-panel border-dim text-slate-200 hover:translate-x-1 hover:border-blue-400 cursor-pointer`
     if (option === currentQ.correct) return `${base} bg-emerald-500/10 border-emerald-500 text-emerald-400`
-    if (option === selected)         return `${base} bg-danger/10 border-danger text-danger`
+    if (option === selected) return `${base} bg-danger/10 border-danger text-danger`
     return `${base} bg-panel border-navy text-slate-600`
   }
 
@@ -192,16 +196,34 @@ function GrammarQuiz({ navigate, completeGame }) {
         )}
       </div>
 
-      <div className="bg-panel border border-dim rounded-2xl px-6 py-7 text-center">
-        <p className="text-slate-400 text-xs mb-3">Question {index + 1}</p>
+      <div className="bg-panel border border-dim rounded-2xl px-6 py-7 text-center flex flex-col items-center gap-3">
+        <p className="text-slate-400 text-xs">Question {index + 1}</p>
         <p className="text-slate-200 text-lg font-extrabold leading-relaxed">{currentQ.question}</p>
+
+        {/* Tombol Hint */}
+        {!isAnswered && (
+          <button
+            className="bg-amber-400/10 border border-amber-400/30 text-amber-400 rounded-lg px-4 py-1.5 text-xs font-bold hover:bg-amber-400/20 transition-colors"
+            onClick={() => setShowHint(h => !h)}
+          >
+            {showHint ? '🙈 Hide Hint' : '💡 Show Hint'}
+            <span className="text-danger ml-1.5 text-[10px]">(-3 pts)</span>
+          </button>
+        )}
+
+        {/* Teks Hint */}
+        {showHint && !isAnswered && (
+          <p className="text-amber-400 text-sm italic bg-amber-400/10 rounded-xl px-4 py-2 w-full">
+            💡 {currentQ.hint}
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-2.5">
         {currentQ.options.map((option, i) => (
           <button key={i} className={getOptionClass(option)} onClick={() => handleAnswer(option)} disabled={isAnswered}>
             <span className="bg-navy rounded-md w-7 h-7 flex items-center justify-center text-xs font-extrabold text-slate-400 flex-shrink-0">
-              {['A','B','C','D'][i]}
+              {['A', 'B', 'C', 'D'][i]}
             </span>
             <span className="flex-1">{option}</span>
             {isAnswered && option === currentQ.correct && <span className="ml-auto text-emerald-400">✓</span>}
