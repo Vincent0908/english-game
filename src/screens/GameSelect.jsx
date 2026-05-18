@@ -124,6 +124,18 @@ function GameSelect({ navigate, playerData, difficulty, setDifficulty }) {
           </div>
         ))}
       </div>
+
+      {/* Creator Profile Button */}
+      <div className="flex justify-center pb-2 animate-[fadeInUp_0.5s_0.5s_ease_both]">
+        <button
+          className="flex items-center gap-2.5 glass-card px-5 py-2.5 rounded-full text-slate-400 text-xs font-bold hover:text-slate-200 hover:bg-white/8 hover:scale-105 transition-all group border border-white/5 hover:border-white/10"
+          onClick={() => navigate('profile')}
+        >
+          <span className="w-6 h-6 rounded-full bg-gradient-to-br from-gold/30 to-purple-500/30 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">👨‍💻</span>
+          <span>About the Creator</span>
+          <span className="text-slate-600 group-hover:text-slate-400 transition-colors">→</span>
+        </button>
+      </div>
     </div>
   )
 }

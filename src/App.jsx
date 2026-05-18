@@ -5,6 +5,7 @@ import VocabularyMatch from './screens/VocabularyMatch'
 import WordScramble from './screens/WordScramble'
 import SentenceBuilder from './screens/SentenceBuilder'
 import GrammarQuiz from './screens/GrammarQuiz'
+import CreatorProfile from './screens/CreatorProfile'
 
 function App() {
   const [screen, setScreen] = useState('home')
@@ -91,6 +92,9 @@ function App() {
       )}
       {screen === 'grammar' && (
         <GrammarQuiz navigate={navigate} playerData={playerData} completeGame={completeGame} difficulty={difficulty} />
+      )}
+      {screen === 'profile' && (
+        <CreatorProfile navigate={navigate} />
       )}
     </div>
   )
