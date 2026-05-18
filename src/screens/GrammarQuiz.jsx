@@ -96,15 +96,13 @@ function GrammarQuiz({ navigate, completeGame, difficulty = 'normal' }) {
       })
     } else {
       setStreak(0)
-      if (option !== null) {
-        setLives(l => {
-          const newL = Math.max(0, l - 1)
-          if (newL <= 0) setTimeout(() => setPhase('result'), 2000)
-          return newL
-        })
-        setShakeScreen(true)
-        setTimeout(() => setShakeScreen(false), 500)
-      }
+      setLives(l => {
+        const newL = Math.max(0, l - 1)
+        if (newL <= 0) setTimeout(() => setPhase('result'), 2000)
+        return newL
+      })
+      setShakeScreen(true)
+      setTimeout(() => setShakeScreen(false), 500)
     }
     setResults(prev => [...prev, {
       question: currentQ.question,
@@ -115,7 +113,7 @@ function GrammarQuiz({ navigate, completeGame, difficulty = 'normal' }) {
       isCorrect: ok,
     }])
     setTimeout(() => {
-      if (lives <= 1 && !ok && option !== null) {
+      if (lives <= 1 && !ok) {
         setPhase('result')
       } else if (index + 1 >= TOTAL_QUESTIONS) {
         setPhase('result')
@@ -268,11 +266,12 @@ function GrammarQuiz({ navigate, completeGame, difficulty = 'normal' }) {
         {/* Hint button */}
         {!isAnswered && (
           <button
-            className="bg-amber-400/10 border border-amber-400/30 text-amber-400 rounded-lg px-4 py-1.5 text-xs font-bold hover:bg-amber-400/20 hover:scale-105 transition-all"
-            onClick={() => setShowHint(h => !h)}
+            className={`bg-amber-400/10 border border-amber-400/30 rounded-lg px-4 py-1.5 text-xs font-bold transition-all ${score <= 0 && !showHint ? 'opacity-40 cursor-not-allowed text-slate-500' : 'text-amber-400 hover:bg-amber-400/20 hover:scale-105'}`}
+            onClick={() => { if (score <= 0 && !showHint) return; setShowHint(h => !h) }}
+            disabled={score <= 0 && !showHint}
           >
             {showHint ? '🙈 Hide Hint' : '💡 Show Hint'}
-            <span className="text-danger ml-1.5 text-[10px]">(-3 pts)</span>
+            {score <= 0 && !showHint ? <span className="text-slate-500 ml-1.5 text-[10px]">(No pts)</span> : <span className="text-danger ml-1.5 text-[10px]">(-3 pts)</span>}
           </button>
         )}
 

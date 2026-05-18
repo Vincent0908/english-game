@@ -180,6 +180,7 @@ function WordScramble({ navigate, completeGame, difficulty = 'normal' }) {
 
   const handleReveal = () => {
     if (feedback) return
+    if (score <= 0) return
     const unfilled = currentQ.word.split('').map((char, i) => ({ char, i })).filter(({ i }) => !answer[i] && !revealedPositions.includes(i))
     if (!unfilled.length) return
     const { char, i: pos } = unfilled[0]
@@ -280,10 +281,11 @@ function WordScramble({ navigate, completeGame, difficulty = 'normal' }) {
               {showHint ? '🙈 Hide Hint' : '💡 Show Hint'}
             </button>
             <button
-              className="bg-purple-500/10 border border-purple-500/30 text-purple-400 rounded-lg px-3 py-1.5 text-sm hover:bg-purple-500/20 hover:scale-105 transition-all"
+              className={`bg-purple-500/10 border border-purple-500/30 rounded-lg px-3 py-1.5 text-sm transition-all ${score <= 0 ? 'opacity-40 cursor-not-allowed text-slate-500' : 'text-purple-400 hover:bg-purple-500/20 hover:scale-105'}`}
               onClick={handleReveal}
+              disabled={score <= 0}
             >
-              🔍 Reveal Letter <span className="text-danger text-xs">(-5 pts)</span>
+              🔍 Reveal Letter {score <= 0 ? <span className="text-slate-500 text-xs">(No pts)</span> : <span className="text-danger text-xs">(-5 pts)</span>}
             </button>
           </div>
         )}

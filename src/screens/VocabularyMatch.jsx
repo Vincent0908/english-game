@@ -108,11 +108,9 @@ function VocabularyMatch({ navigate, completeGame, difficulty = 'normal' }) {
     } else {
       setStreak(0)
       setSpeedBonus(0)
-      if (option !== null) {
-        setLives(l => Math.max(0, l - 1))
-        setShakeScreen(true)
-        setTimeout(() => setShakeScreen(false), 500)
-      }
+      setLives(l => Math.max(0, l - 1))
+      setShakeScreen(true)
+      setTimeout(() => setShakeScreen(false), 500)
     }
 
     setResults(prev => [...prev, {
@@ -123,7 +121,7 @@ function VocabularyMatch({ navigate, completeGame, difficulty = 'normal' }) {
     }])
 
     setTimeout(() => {
-      if (lives <= 1 && !isCorrect && option !== null) {
+      if (lives <= 1 && !isCorrect) {
         setPhase('result')
       } else if (currentIndex + 1 >= TOTAL_QUESTIONS) {
         setPhase('result')
