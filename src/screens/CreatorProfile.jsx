@@ -18,7 +18,7 @@ const PROFILE_DATA = {
   // Contoh: simpan sebagai  public/photo.jpg  lalu isi '/photo.jpg'
   // Format yang didukung: .jpg  .jpeg  .png  .webp
   // Biarkan null jika ingin pakai inisial nama
-  avatarUrl: '../public/photo.jpg',
+  avatarUrl: './public/photo.jpg',
 
   // ----- ABOUT ME -----
   about: 'Seorang mahasiswa semester 2 di program studi Teknologi Rekayasa Perangkat Lunak di Politeknik Negeri Medan. Sangat senang belajar hal baru terutama di bidang IT',
